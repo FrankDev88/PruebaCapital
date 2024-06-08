@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load socialaccount %}
+{% load static %}
+
+{% block head_content %}
+<title>Iniciar sesión</title>
+{% endblock %}
+
+{% block container %}
+
+    {% if form.errors %}
+        <p class="login-text"><i class="fas fa-exclamation-triangle"></i> Su nombre de usuario y contraseña no coinciden. Inténtalo de nuevo.</p>
+    {% endif%}
+
+    <form class="login-form" method="POST" action="{% url "usuarios:login" %}">
+        {% csrf_token %}
+
+        <input type="text" name="username" id="username" placeholder="Usuario/Email">
+        <input type="password" name="password" id="password" placeholder="Contraseña">
+
+        <div class="login-options-container">
+            <p>¿No te has registrado aún? <a href="{% url 'usuarios:signup' %}">Regístrate!</a></p>
+        </div>
+
+        <button class="log-in-button">
+            Iniciar sesión
+        </button>
+
+    </form>
+{% endblock%}

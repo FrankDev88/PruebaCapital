@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block head_content %}
+<title>Registrar Vehículo</title>
+{% endblock %}
+
+{% block container %}
+
+    <form class="login-form" method="POST" action="{% url "vehiculos:registro_vehiculo" %}">
+        {% csrf_token %}
+
+        <input type="text" name="marca" id="marca" placeholder="Marca">
+        <input type="text" name="modelo" id="modelo" placeholder="Modelo">
+        <input type="text" name="num_serie" id="num_serie" placeholder="Num. serie">
+        <input type="text" name="num_placas" id="num_placas" placeholder="Placas">
+
+        <button class="log-in-button">
+            Registrar Vehículo
+        </button>
+
+    </form>
+{% endblock%}

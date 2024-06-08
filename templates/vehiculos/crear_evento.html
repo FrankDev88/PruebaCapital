@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block head_content %}
+<title>Crear Evento</title>
+{% endblock %}
+
+{% block container %}
+
+    <form class="login-form" method="POST" action="{% url "vehiculos:crear_evento" %}">
+        {% csrf_token %}
+
+        <input type="text" name="nombre" id="nombre" placeholder="Nombre">
+        <input type="text" name="max_invitados" id="max_invitados" placeholder="Max. invitados">
+
+        <button class="log-in-button">
+            Crear Evento
+        </button>
+
+    </form>
+{% endblock%}

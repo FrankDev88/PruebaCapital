@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block head_content %}
+<title>Crear Invitación</title>
+{% endblock %}
+
+{% block container %}
+
+    <form class="login-form" method="POST" action="{% url "vehiculos:crear_invitacion" %}">
+        {% csrf_token %}
+
+        <input type="text" name="num_placas" id="num_placas" placeholder="Num placas">
+        <select name="evento_id" id="evento_id">
+            {% for evento in eventos %}
+            <option value="{{evento.id}}">{{evento.nombre}}</option>
+            {% endfor %}
+        </select>
+
+        <button class="log-in-button">
+            Crear Invitación
+        </button>
+
+    </form>
+{% endblock%}

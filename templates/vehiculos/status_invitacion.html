@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block head_content %}
+<title>Status Invitación</title>
+
+<!-- Incluye jQuery (asegúrate de que esté incluido antes de Select2) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Incluye las hojas de estilo de Select2 -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+
+<!-- Incluye la biblioteca Select2 -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+{% endblock %}
+
+{% block container %}
+
+    <div>
+        {% csrf_token %}
+
+        <select name="evento_id" id="evento_id">
+            <option value="">-- Evento --</option>
+            {% for evento in eventos %}
+            <option value="{{evento.id}}">{{evento.nombre}}</option>
+            {% endfor %}
+        </select>
+
+        <div class="invitado-id-div" hidden>
+            <select name="invitado_id" id="invitado_id">
+                <option value="">-- Invitado --</option>
+            </select>
+        </div>
+
+        <div class="button-div">
+        </div>
+
+    </div>
+    <script>
+
+        $(document).ready(function() {
+            $('#evento_id').select2({
+                width: '100%',
+                ajax: {
+                    type: 'GET',
+                    dataType: 'json',
+                    url: "{% url 'vehiculos:get_info' %}",
+                    delay: 250,
+                    headers: {
+                        "X-CSRFToken": Cookies.get("csrftoken")
+                    },
+                    data: function(params) {
+                        return {
+                            modelo: "evento",
+                            search: params.term
+                        };
+                    },
+                    processResults: function(data) {
+                        var results = [];
+                        for (var i = 0; i < data.length; i++) {
+                            results.push({
+                                id: data[i].evento_id,
+                                text: data[i].nombre,
+                            });
+                        }
+                        return {
+                            results: results
+                        };
+                    },
+                    cache: true
+                },
+            }).on('select2:select', function (e) {
+                $(".invitado-id-div").show()
+            })
+
+            $('#invitado_id').select2({
+                width: '100%',
+                ajax: {
+                    type: 'GET',
+                    dataType: 'json',
+                    url: "{% url 'vehiculos:get_info' %}",
+                    delay: 250,
+                    headers: {
+                        "X-CSRFToken": Cookies.get("csrftoken")
+                    },
+                    data: function(params) {
+                        return {
+                            modelo: "invitado",
+                            evento_id: $("#evento_id").val(),
+                            search: params.term
+                        };
+                    },
+                    processResults: function(data) {
+                        var results = [];
+                        for (var i = 0; i < data.length; i++) {
+                            results.push({
+                                id: data[i].invitado_id,
+                                text: data[i].num_placas,
+                                status: data[i].status
+                            });
+                        }
+                        return {
+                            results: results
+                        };
+                    },
+                    cache: true
+                },
+            }).on('select2:select', function (e) {
+                var data = e.params.data;
+                var status = data.status;
+
+                $(".button-div").empty()
+
+                if (status == "check_in") {
+                    $(".button-div").append($('<button>', {
+                        text: "Check in",
+                        onclick: "perform_check_in();",
+                    }));
+                }
+                else if (status == "check_out") {
+                    $(".button-div").append($('<button>', {
+                        text: "Check out",
+                        onclick: "perform_check_out();",
+                    }));
+                }
+            });
+        })
+
+
+        function perform_check_in() {
+            data = {}
+            var invitado_id = $("#invitado_id").val()
+            data.invitado_id = invitado_id;
+            data.accion = "check_in";
+            data._method = "PATCH";
+            $.ajax({
+                type: 'POST',
+                data: data,
+                success: function (response) {
+                    window.location.reload()
+                }
+            })
+        }
+
+        function perform_check_out() {
+            data = {}
+            var invitado_id = $("#invitado_id").val()
+            data.invitado_id = invitado_id;
+            data.accion = "check_out";
+            data._method = "PATCH";
+            $.ajax({
+                type: 'POST',
+                data: data,
+                success: function (response) {
+                    window.location.reload()
+                }
+            })
+        }
+    </script>
+{% endblock%}
